@@ -1,0 +1,41 @@
+package com.example.Insurance.entities;
+
+import com.example.Insurance.utils.BranchType;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.Getter;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "branches")
+@Data
+public class Branch {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String branchCode;
+
+    @Getter
+    @Column(nullable = false)
+    private String branchName;
+
+    @Enumerated(EnumType.STRING)
+    private BranchType branchType;
+
+    private String address;
+
+    private String contactNumber;
+
+    private String email;
+
+    private Boolean active = true;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+}
