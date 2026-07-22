@@ -28,6 +28,7 @@ public class FileTransferServiceImpl implements FileTransferService {
     private final BranchRepository branchRepository;
     private final DeliveryConfirmationRepository confirmationRepository;
     private final UserRepository userRepository;
+    private final UserInfoRepository userInfoRepository;
 
 
     private User getLoggedUser(Authentication authentication) {
@@ -41,7 +42,7 @@ public class FileTransferServiceImpl implements FileTransferService {
 
     private Branch getUserBranch(User user) {
 
-        return branchRepository.findByBranchCode(user.getBranchCode(user))
+        return branchRepository.findByBranchCode(user.getBranchCode())
                 .orElseThrow(() ->
                         new RuntimeException("Branch not found"));
     }
@@ -60,11 +61,11 @@ public class FileTransferServiceImpl implements FileTransferService {
 
         User user = getLoggedUser(authentication);
 
-        Branch fromBranch = branchRepository.findById(request.getFromBranchId())
+        Branch fromBranch = branchRepository.findByBranchCode(String.valueOf(request.getFromBranchId()))
                 .orElseThrow(() ->
                         new RuntimeException("From branch not found"));
 
-        Branch toBranch = branchRepository.findById(request.getToBranchId())
+        Branch toBranch = branchRepository.findByBranchCode(String.valueOf(request.getToBranchId()))
                 .orElseThrow(() ->
                         new RuntimeException("Destination branch not found"));
 

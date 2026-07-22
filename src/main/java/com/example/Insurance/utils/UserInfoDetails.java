@@ -1,15 +1,14 @@
 package com.example.Insurance.utils;
 
-import com.example.Insurance.entities.UserInfo;
-import org.jspecify.annotations.Nullable;
+import com.example.Insurance.entities.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class UserInfoDetails implements UserDetails {
 
@@ -17,11 +16,10 @@ public class UserInfoDetails implements UserDetails {
     private String password;
     private List<GrantedAuthority> authorities;
 
-    public UserInfoDetails(UserInfo userInfo) {
+    public UserInfoDetails(User userInfo) {
         this.username = userInfo.getEmail(); // Use email as username
         this.password = userInfo.getPassword();
-        this.authorities = List.of(userInfo.getRoles().split(","))
-                .stream()
+        this.authorities = Stream.of(userInfo.getRoles().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }

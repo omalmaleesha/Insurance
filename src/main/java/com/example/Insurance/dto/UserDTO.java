@@ -2,6 +2,7 @@ package com.example.Insurance.dto;
 
 import com.example.Insurance.utils.EmployeeType;
 import com.example.Insurance.utils.Gender;
+import com.example.Insurance.utils.Role;
 import com.example.Insurance.utils.Status;
 import lombok.*;
 
@@ -19,6 +20,7 @@ public class UserDTO {
     private String firstName;
     private String lastName;
     private String email;
+    private String password;
     private String phoneNumber;
     private String nic;
     private Gender gender;
@@ -33,4 +35,5 @@ public class UserDTO {
     private String department;
     private Status status;
     private LocalDate joinedDate;
+    private Role role;
 }

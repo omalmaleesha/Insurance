@@ -2,6 +2,7 @@ package com.example.Insurance.entities;
 
 import com.example.Insurance.utils.EmployeeType;
 import com.example.Insurance.utils.Gender;
+import com.example.Insurance.utils.Role;
 import com.example.Insurance.utils.Status;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,6 +10,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -17,6 +19,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Data
 public class User {
 
     @Id
@@ -88,7 +91,17 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public String getBranchCode(User user) {
-        return user.getBranchCode(user);
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
+
+    public String getBranchCode() {
+        return branch != null ? branch.getBranchCode() : null;
+    }
+    // last time this works as a infinite recursion until the JVM stack is full.
+
+    public String getRoles() {
+        return role.toString();
     }
 }

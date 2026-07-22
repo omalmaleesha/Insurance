@@ -14,6 +14,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
+//first create the shipment
+//then add items to the shipment
+//then dispatch the shipment
+//then receive the shipment
+
+
 @RestController
 @RequestMapping("/api/file-transfer")
 @RequiredArgsConstructor
@@ -29,6 +36,7 @@ public class FileTransferController {
             @RequestBody CreateShipmentRequest request,
             Authentication authentication
     ) {
+        System.out.println(authentication.getName());
         return service.createShipment(request, authentication);
     }
 
