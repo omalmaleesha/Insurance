@@ -1,4 +1,4 @@
-package com.example.Insurance.dto;
+package com.example.Insurance.dto.auth;
 
 import com.example.Insurance.utils.EmployeeType;
 import com.example.Insurance.utils.Gender;

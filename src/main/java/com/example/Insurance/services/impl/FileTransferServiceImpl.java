@@ -1,4 +1,4 @@
-package com.example.Insurance.services;
+package com.example.Insurance.services.impl;
 
 import com.example.Insurance.dto.delivery.DeliveryConfirmationRequest;
 import com.example.Insurance.dto.delivery.DeliveryConfirmationResponse;
@@ -9,6 +9,7 @@ import com.example.Insurance.dto.shipmentitem.ShipmentItemRequest;
 import com.example.Insurance.dto.shipmentitem.ShipmentItemResponse;
 import com.example.Insurance.entities.*;
 import com.example.Insurance.repository.*;
+import com.example.Insurance.services.FileTransferService;
 import com.example.Insurance.utils.ShipmentStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

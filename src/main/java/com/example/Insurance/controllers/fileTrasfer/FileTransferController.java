@@ -24,6 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/file-transfer")
 @RequiredArgsConstructor
+@CrossOrigin
 public class FileTransferController {
 
     private final FileTransferService service;
@@ -53,7 +54,7 @@ public class FileTransferController {
     }
 
     /**
-     * Get Shipment Documents
+     * Get Shipment Documents /api/file-transfer/shipments/{shipmentId}/items
      */
     @GetMapping("/shipments/{shipmentId}/items")
     public List<ShipmentItemResponse> getItems(

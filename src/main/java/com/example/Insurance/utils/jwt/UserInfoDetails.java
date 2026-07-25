@@ -1,4 +1,4 @@
-package com.example.Insurance.utils;
+package com.example.Insurance.utils.jwt;
 
 import com.example.Insurance.entities.User;
 import org.springframework.security.core.GrantedAuthority;

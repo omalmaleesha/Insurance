@@ -40,4 +40,6 @@ public class ShipmentItem {
     private Boolean received = false;
 
     private LocalDateTime receivedDate;
+
+
 }

@@ -1,12 +1,12 @@
 package com.example.Insurance.controllers;
 
-import com.example.Insurance.dto.AuthRequest;
-import com.example.Insurance.dto.UserDTO;
+import com.example.Insurance.dto.auth.AuthRequest;
+import com.example.Insurance.dto.auth.UserDTO;
 import com.example.Insurance.entities.Branch;
 import com.example.Insurance.entities.User;
 import com.example.Insurance.repository.BranchRepository;
-import com.example.Insurance.utils.JwtService;
-import com.example.Insurance.utils.UserInfoService;
+import com.example.Insurance.utils.jwt.JwtService;
+import com.example.Insurance.utils.jwt.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@CrossOrigin
 public class UserController {
 
     private final UserInfoService service;

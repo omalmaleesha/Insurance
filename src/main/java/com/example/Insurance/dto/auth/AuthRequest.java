@@ -1,4 +1,4 @@
-package com.example.Insurance.dto;
+package com.example.Insurance.dto.auth;
 
 
 import lombok.AllArgsConstructor;
