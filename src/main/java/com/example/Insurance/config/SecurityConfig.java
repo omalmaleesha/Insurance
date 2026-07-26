@@ -63,6 +63,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/auth/**").permitAll()
+                        // Customer proposal access
+                        .requestMatchers(
+                                "/api/proposals/form",
+                                "/api/proposals/submit"
+                        ).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter,
                         UsernamePasswordAuthenticationFilter.class);
