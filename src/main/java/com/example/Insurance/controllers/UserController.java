@@ -31,8 +31,6 @@ public class UserController {
     }
 
 
-
-
     @PostMapping("/addNewUser")
     public String addNewUser(@RequestBody UserDTO userInfo) {
         System.out.println("Adding new user");
