@@ -1,14 +1,14 @@
 package com.example.Insurance.services.impl;
 
 import com.example.Insurance.dto.proposal.*;
-import com.example.Insurance.entities.Proposal;
-import com.example.Insurance.entities.ProposalAccessToken;
-import com.example.Insurance.entities.ProposalSignature;
-import com.example.Insurance.repository.ProposalAccessTokenRepository;
-import com.example.Insurance.repository.ProposalRepository;
-import com.example.Insurance.repository.ProposalSignatureRepository;
+import com.example.Insurance.entities.propsal.Proposal;
+import com.example.Insurance.entities.propsal.ProposalAccessToken;
+import com.example.Insurance.entities.propsal.ProposalSignature;
+import com.example.Insurance.repository.proposal.ProposalAccessTokenRepository;
+import com.example.Insurance.repository.proposal.ProposalRepository;
+import com.example.Insurance.repository.proposal.ProposalSignatureRepository;
 import com.example.Insurance.services.ProposalService;
-import com.example.Insurance.utils.ProposalStatus;
+import com.example.Insurance.utils.types.ProposalStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;

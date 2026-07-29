@@ -1,9 +1,9 @@
 package com.example.Insurance.dto.auth;
 
-import com.example.Insurance.utils.EmployeeType;
-import com.example.Insurance.utils.Gender;
-import com.example.Insurance.utils.Role;
-import com.example.Insurance.utils.Status;
+import com.example.Insurance.utils.types.EmployeeType;
+import com.example.Insurance.utils.types.Gender;
+import com.example.Insurance.utils.types.Role;
+import com.example.Insurance.utils.types.Status;
 import lombok.*;
 
 import java.math.BigDecimal;

@@ -1,6 +1,6 @@
 package com.example.Insurance.dto.proposal;
 
-import com.example.Insurance.utils.ProposalStatus;
+import com.example.Insurance.utils.types.ProposalStatus;
 import lombok.*;
 
 @Getter

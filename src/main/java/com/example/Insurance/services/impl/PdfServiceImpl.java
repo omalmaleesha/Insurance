@@ -1,9 +1,9 @@
 package com.example.Insurance.services.impl;
 
-import com.example.Insurance.entities.Proposal;
-import com.example.Insurance.entities.ProposalSignature;
-import com.example.Insurance.repository.ProposalRepository;
-import com.example.Insurance.repository.ProposalSignatureRepository;
+import com.example.Insurance.entities.propsal.Proposal;
+import com.example.Insurance.entities.propsal.ProposalSignature;
+import com.example.Insurance.repository.proposal.ProposalRepository;
+import com.example.Insurance.repository.proposal.ProposalSignatureRepository;
 import com.example.Insurance.services.PdfService;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPTable;

@@ -2,9 +2,9 @@ package com.example.Insurance.controllers;
 
 import com.example.Insurance.dto.auth.AuthRequest;
 import com.example.Insurance.dto.auth.UserDTO;
-import com.example.Insurance.entities.Branch;
+import com.example.Insurance.entities.fileTrasfer.Branch;
 import com.example.Insurance.entities.User;
-import com.example.Insurance.repository.BranchRepository;
+import com.example.Insurance.repository.fileTrasfer.BranchRepository;
 import com.example.Insurance.utils.jwt.JwtService;
 import com.example.Insurance.utils.jwt.UserInfoService;
 import lombok.RequiredArgsConstructor;

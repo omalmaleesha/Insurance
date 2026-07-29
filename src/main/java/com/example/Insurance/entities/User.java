@@ -1,16 +1,16 @@
 package com.example.Insurance.entities;
 
-import com.example.Insurance.utils.EmployeeType;
-import com.example.Insurance.utils.Gender;
-import com.example.Insurance.utils.Role;
-import com.example.Insurance.utils.Status;
+import com.example.Insurance.entities.fileTrasfer.Branch;
+import com.example.Insurance.utils.types.EmployeeType;
+import com.example.Insurance.utils.types.Gender;
+import com.example.Insurance.utils.types.Role;
+import com.example.Insurance.utils.types.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "users")

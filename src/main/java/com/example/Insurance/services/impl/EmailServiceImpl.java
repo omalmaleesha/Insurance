@@ -2,16 +2,16 @@ package com.example.Insurance.services.impl;
 
 
 import com.example.Insurance.dto.proposal.EmailResponse;
-import com.example.Insurance.entities.Proposal;
-import com.example.Insurance.entities.ProposalAccessToken;
-import com.example.Insurance.entities.ProposalEmailLog;
-import com.example.Insurance.repository.ProposalAccessTokenRepository;
-import com.example.Insurance.repository.ProposalEmailLogRepository;
-import com.example.Insurance.repository.ProposalRepository;
+import com.example.Insurance.entities.propsal.Proposal;
+import com.example.Insurance.entities.propsal.ProposalAccessToken;
+import com.example.Insurance.entities.propsal.ProposalEmailLog;
+import com.example.Insurance.repository.proposal.ProposalAccessTokenRepository;
+import com.example.Insurance.repository.proposal.ProposalEmailLogRepository;
+import com.example.Insurance.repository.proposal.ProposalRepository;
 import com.example.Insurance.services.EmailService;
 import com.example.Insurance.services.PdfService;
-import com.example.Insurance.utils.ProposalEmailType;
-import com.example.Insurance.utils.ProposalStatus;
+import com.example.Insurance.utils.types.ProposalEmailType;
+import com.example.Insurance.utils.types.ProposalStatus;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

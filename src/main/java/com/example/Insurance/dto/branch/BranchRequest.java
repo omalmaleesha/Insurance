@@ -1,6 +1,6 @@
 package com.example.Insurance.dto.branch;
 
-import com.example.Insurance.utils.BranchType;
+import com.example.Insurance.utils.types.BranchType;
 import lombok.*;
 
 
