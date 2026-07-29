@@ -1,6 +1,6 @@
 package com.example.Insurance.dto.shipment;
 
-import com.example.Insurance.utils.ShipmentStatus;
+import com.example.Insurance.utils.types.ShipmentStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;

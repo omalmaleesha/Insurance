@@ -1,7 +1,7 @@
-package com.example.Insurance.repository;
+package com.example.Insurance.repository.fileTrasfer;
 
-import com.example.Insurance.entities.CourierShipment;
-import com.example.Insurance.entities.ShipmentItem;
+import com.example.Insurance.entities.fileTrasfer.CourierShipment;
+import com.example.Insurance.entities.fileTrasfer.ShipmentItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

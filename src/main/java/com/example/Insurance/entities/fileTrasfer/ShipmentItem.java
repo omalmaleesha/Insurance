@@ -1,5 +1,5 @@
-package com.example.Insurance.entities;
-import com.example.Insurance.utils.DocumentType;
+package com.example.Insurance.entities.fileTrasfer;
+import com.example.Insurance.utils.types.DocumentType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

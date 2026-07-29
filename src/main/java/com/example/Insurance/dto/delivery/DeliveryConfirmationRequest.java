@@ -1,6 +1,6 @@
 package com.example.Insurance.dto.delivery;
 
-import com.example.Insurance.utils.DeliveryCondition;
+import com.example.Insurance.utils.types.DeliveryCondition;
 import lombok.*;
 
 @Getter

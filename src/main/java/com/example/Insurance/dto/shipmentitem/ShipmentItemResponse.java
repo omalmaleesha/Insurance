@@ -1,5 +1,5 @@
 package com.example.Insurance.dto.shipmentitem;
-import com.example.Insurance.utils.DocumentType;
+import com.example.Insurance.utils.types.DocumentType;
 import lombok.*;
 
 @Getter

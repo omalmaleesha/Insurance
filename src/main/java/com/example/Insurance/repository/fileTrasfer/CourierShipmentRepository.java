@@ -1,8 +1,8 @@
-package com.example.Insurance.repository;
+package com.example.Insurance.repository.fileTrasfer;
 
-import com.example.Insurance.entities.Branch;
-import com.example.Insurance.entities.CourierShipment;
-import com.example.Insurance.utils.ShipmentStatus;
+import com.example.Insurance.entities.fileTrasfer.Branch;
+import com.example.Insurance.entities.fileTrasfer.CourierShipment;
+import com.example.Insurance.utils.types.ShipmentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

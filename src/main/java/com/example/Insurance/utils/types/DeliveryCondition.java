@@ -1,4 +1,4 @@
-package com.example.Insurance.utils;
+package com.example.Insurance.utils.types;
 
 public enum DeliveryCondition {
 

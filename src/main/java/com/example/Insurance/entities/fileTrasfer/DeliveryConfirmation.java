@@ -1,6 +1,7 @@
-package com.example.Insurance.entities;
+package com.example.Insurance.entities.fileTrasfer;
 
-import com.example.Insurance.utils.DeliveryCondition;
+import com.example.Insurance.entities.User;
+import com.example.Insurance.utils.types.DeliveryCondition;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
