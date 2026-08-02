@@ -230,11 +230,12 @@ public class FileTransferServiceImpl implements FileTransferService {
     public List<ShipmentResponse> getIncomingShipments(Authentication authentication) {
 
         User user = getLoggedUser(authentication);
-
+        System.out.println(user.toString());
         Branch branch = getUserBranch(user);
+        System.out.println(branch.toString());
 
-        return shipmentRepository
-                .findByToBranchAndStatus(branch, ShipmentStatus.DISPATCHED)
+        List<ShipmentResponse> list = shipmentRepository
+                .findByFromBranchAndStatus(branch, ShipmentStatus.DISPATCHED)
                 .stream()
                 .map(shipment -> ShipmentResponse.builder()
                         .id(shipment.getId())
@@ -250,6 +251,9 @@ public class FileTransferServiceImpl implements FileTransferService {
                         .status(shipment.getStatus())
                         .build())
                 .toList();
+        System.out.println(list.toString());
+
+        return list;
     }
 
 

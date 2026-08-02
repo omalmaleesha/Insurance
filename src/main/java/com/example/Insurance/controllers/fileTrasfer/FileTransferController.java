@@ -38,6 +38,7 @@ public class FileTransferController {
             Authentication authentication
     ) {
         System.out.println(authentication.getName());
+        System.out.println(request.toString());
         return service.createShipment(request, authentication);
     }
 
