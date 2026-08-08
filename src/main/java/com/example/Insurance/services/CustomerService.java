@@ -1,8 +1,10 @@
 package com.example.Insurance.services;
 
+import com.example.Insurance.dto.PageResponse;
 import com.example.Insurance.dto.customer.*;
 import com.example.Insurance.utils.types.CustomerType;
 import com.example.Insurance.utils.types.Status;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
@@ -31,8 +33,10 @@ public interface CustomerService {
             Long id,
             Authentication authentication);
 
-    List<?> getAllCustomers(
-            Authentication authentication);
+    PageResponse<?> getAllCustomers(
+            Authentication authentication,
+            Pageable pageable
+    );
 
     void deleteCustomer(
             Long id,

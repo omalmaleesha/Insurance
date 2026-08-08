@@ -1,10 +1,15 @@
-package com.example.Insurance.controllers;
+package com.example.Insurance.controllers.customer;
 
+import com.example.Insurance.dto.PageResponse;
 import com.example.Insurance.dto.customer.*;
 import com.example.Insurance.services.CustomerService;
 import com.example.Insurance.utils.types.CustomerType;
 import com.example.Insurance.utils.types.Status;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -20,10 +25,7 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-    // ===========================
     // PERSONAL CUSTOMERS
-    // ===========================
-
     @PostMapping("/personal")
     public ResponseEntity<PersonalCustomerResponseDTO> createPersonalCustomer(
             @RequestBody PersonalCustomerCreateRequestDTO request,
@@ -43,10 +45,7 @@ public class CustomerController {
                 customerService.updatePersonalCustomer(id, request, authentication));
     }
 
-    // ===========================
     // CORPORATE CUSTOMERS
-    // ===========================
-
     @PostMapping("/corporate")
     public ResponseEntity<CorporateCustomerResponseDTO> createCorporateCustomer(
             @RequestBody CorporateCustomerCreateRequestDTO request,
@@ -66,10 +65,7 @@ public class CustomerController {
                 customerService.updateCorporateCustomer(id, request, authentication));
     }
 
-    // ===========================
     // COMMON OPERATIONS
-    // ===========================
-
     @GetMapping("/{id}")
     public ResponseEntity<?> getCustomerById(
             @PathVariable Long id,
@@ -80,11 +76,22 @@ public class CustomerController {
     }
 
     @GetMapping
-    public ResponseEntity<List<?>> getAllCustomers(
+    public ResponseEntity<PageResponse<?>> getAllCustomers(
+            @PageableDefault(
+                    page = 0,
+                    size = 50,
+                    sort = "id",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable,
             Authentication authentication) {
 
         return ResponseEntity.ok(
-                customerService.getAllCustomers(authentication));
+                customerService.getAllCustomers(
+                        authentication,
+                        pageable
+                )
+        );
     }
 
     @DeleteMapping("/{id}")

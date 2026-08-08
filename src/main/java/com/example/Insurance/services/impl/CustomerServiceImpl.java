@@ -1,5 +1,6 @@
 package com.example.Insurance.services.impl;
 
+import com.example.Insurance.dto.PageResponse;
 import com.example.Insurance.dto.customer.*;
 import com.example.Insurance.entities.CorporateCustomer;
 import com.example.Insurance.entities.Customer;
@@ -11,6 +12,8 @@ import com.example.Insurance.services.CustomerService;
 import com.example.Insurance.utils.types.CustomerType;
 import com.example.Insurance.utils.types.Status;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -319,10 +322,14 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<?> getAllCustomers(
-            Authentication authentication) {
+    public PageResponse<?> getAllCustomers(
+            Authentication authentication,
+            Pageable pageable) {
 
-        return customerRepository.findAll()
+        Page<Customer> customerPage =
+                customerRepository.findAll(pageable);
+
+        List<?> customers = customerPage.getContent()
                 .stream()
                 .map(customer -> {
 
@@ -330,10 +337,23 @@ public class CustomerServiceImpl implements CustomerService {
                         return mapPersonal(personalCustomer);
                     }
 
-                    return mapCorporate((CorporateCustomer) customer);
+                    if (customer instanceof CorporateCustomer corporateCustomer) {
+                        return mapCorporate(corporateCustomer);
+                    }
 
+                    throw new RuntimeException("Invalid customer type.");
                 })
                 .toList();
+
+        return new PageResponse<>(
+                customers,
+                customerPage.getNumber(),
+                customerPage.getSize(),
+                customerPage.getTotalElements(),
+                customerPage.getTotalPages(),
+                customerPage.isFirst(),
+                customerPage.isLast()
+        );
     }
 
     @Override
