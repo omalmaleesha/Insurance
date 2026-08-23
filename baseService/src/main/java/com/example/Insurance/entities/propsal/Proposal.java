@@ -1,7 +1,6 @@
 package com.example.Insurance.entities.propsal;
 
 import com.example.Insurance.entities.User;
-import com.example.Insurance.entities.qty.Quotation;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import lombok.*;
