@@ -9,7 +9,6 @@ import com.example.Insurance.dto.shipmentitem.ShipmentItemRequest;
 import com.example.Insurance.dto.shipmentitem.ShipmentItemResponse;
 import com.example.Insurance.services.FileTransferService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
