@@ -6,7 +6,6 @@ import com.example.Insurance.services.CustomerService;
 import com.example.Insurance.utils.types.CustomerType;
 import com.example.Insurance.utils.types.Status;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -20,7 +19,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/customers")
 @RequiredArgsConstructor
-@CrossOrigin
 public class CustomerController {
 
     private final CustomerService customerService;

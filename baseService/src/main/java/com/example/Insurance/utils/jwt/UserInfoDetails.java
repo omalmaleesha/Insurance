@@ -80,7 +80,7 @@ public class UserInfoDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return user.getStatus() == com.example.Insurance.utils.types.Status.ACTIVE;
+        return true;
     }
 
 }

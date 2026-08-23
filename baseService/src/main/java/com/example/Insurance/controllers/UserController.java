@@ -8,7 +8,6 @@ import com.example.Insurance.repository.fileTrasfer.BranchRepository;
 import com.example.Insurance.utils.jwt.JwtService;
 import com.example.Insurance.utils.jwt.UserInfoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@CrossOrigin
 public class UserController {
 
     private final UserInfoService service;
