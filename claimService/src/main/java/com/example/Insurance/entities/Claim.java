@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "claims")
@@ -72,6 +74,13 @@ public class Claim {
             status = ClaimStatus.REPORTED;
         }
     }
+
+    @OneToMany(
+            mappedBy = "claim",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<ClaimDocument> documents = new ArrayList<>();
 
     @PreUpdate
     protected void onUpdate() {

@@ -1,0 +1,120 @@
+package com.example.Insurance.entities;
+
+import com.example.Insurance.utils.types.ClaimDocumentType;
+import com.example.Insurance.utils.types.DocumentSource;
+
+import com.example.Insurance.utils.types.DocumentStatus;
+import jakarta.persistence.*;
+
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "claim_documents")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class ClaimDocument {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // Document belongs to a claim
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "claim_id",
+            nullable = false
+    )
+    private Claim claim;
+
+    @Enumerated(EnumType.STRING)
+    @Column(
+            name = "document_type",
+            nullable = false
+    )
+    private ClaimDocumentType documentType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(
+            name = "document_source",
+            nullable = false
+    )
+    private DocumentSource documentSource;
+
+    @Enumerated(EnumType.STRING)
+    @Column(
+            nullable = false
+    )
+    private DocumentStatus status;
+
+    // Original filename
+    @Column(
+            name = "file_name",
+            nullable = false
+    )
+    private String fileName;
+
+    // Stored file path or cloud URL
+    @Column(
+            name = "file_url",
+            nullable = false,
+            length = 1000
+    )
+    private String fileUrl;
+
+    // application/pdf, image/jpeg, etc.
+    @Column(
+            name = "content_type"
+    )
+    private String contentType;
+
+    @Column(
+            name = "file_size"
+    )
+    private Long fileSize;
+
+    // ETF number from base-service
+    @Column(
+            name = "uploaded_by_etf_no",
+            nullable = false,
+            length = 20
+    )
+    private String uploadedByEtfNo;
+
+    // Reason if rejected
+    @Column(
+            name = "rejection_reason",
+            columnDefinition = "TEXT"
+    )
+    private String rejectionReason;
+
+    @Column(
+            name = "uploaded_at",
+            nullable = false,
+            updatable = false
+    )
+    private LocalDateTime uploadedAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+
+        if (status == null) {
+            status = DocumentStatus.UPLOADED;
+        }
+
+        uploadedAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+}
