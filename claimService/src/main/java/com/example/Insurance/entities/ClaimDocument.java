@@ -4,6 +4,7 @@ import com.example.Insurance.utils.types.ClaimDocumentType;
 import com.example.Insurance.utils.types.DocumentSource;
 
 import com.example.Insurance.utils.types.DocumentStatus;
+import com.example.Insurance.utils.types.StorageProvider;
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -59,12 +60,26 @@ public class ClaimDocument {
     private String fileName;
 
     // Stored file path or cloud URL
+    @Enumerated(EnumType.STRING)
     @Column(
-            name = "file_url",
-            nullable = false,
-            length = 1000
+            name = "storage_provider",
+            nullable = false
     )
-    private String fileUrl;
+    private StorageProvider storageProvider;
+
+    @Column(
+            name = "storage_file_id",
+            nullable = false,
+            unique = true,
+            length = 255
+    )
+    private String storageFileId;
+
+    @Column(
+            name = "storage_folder_id",
+            length = 255
+    )
+    private String storageFolderId;
 
     // application/pdf, image/jpeg, etc.
     @Column(

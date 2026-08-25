@@ -1,5 +1,4 @@
 package com.example.Insurance.dto;
-
 import com.example.Insurance.utils.types.ClaimDocumentType;
 import com.example.Insurance.utils.types.DocumentSource;
 import com.example.Insurance.utils.types.DocumentStatus;
@@ -27,7 +26,7 @@ public class ClaimDocumentDTO {
 
     private String fileName;
 
-    private String fileUrl;
+    private String viewUrl;
 
     private String contentType;
 

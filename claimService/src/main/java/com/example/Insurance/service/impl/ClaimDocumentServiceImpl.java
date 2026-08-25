@@ -1,255 +1,555 @@
 package com.example.Insurance.service.impl;
-
+import com.example.Insurance.config.GoogleDriveProperties;
 import com.example.Insurance.dto.ClaimDocumentDTO;
 import com.example.Insurance.entities.Claim;
 import com.example.Insurance.entities.ClaimDocument;
 import com.example.Insurance.repository.ClaimDocumentRepository;
 import com.example.Insurance.repository.ClaimRepository;
 import com.example.Insurance.service.ClaimDocumentService;
+import com.example.Insurance.service.storage.FileStorageService;
+import com.example.Insurance.service.storage.StoredFile;
+import com.example.Insurance.service.storage.StorageFile;
 import com.example.Insurance.utils.types.ClaimDocumentType;
 import com.example.Insurance.utils.types.DocumentSource;
 import com.example.Insurance.utils.types.DocumentStatus;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.stereotype.Service;
+
 import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ClaimDocumentServiceImpl implements ClaimDocumentService {
+public class ClaimDocumentServiceImpl
+        implements ClaimDocumentService {
 
-    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
-    private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of("application/pdf", "image/jpeg", "image/png");
+
+    // =========================================================
+    // CONSTANTS
+    // =========================================================
+
+    private static final long MAX_FILE_SIZE =
+            10 * 1024 * 1024;
+
+    private static final Set<String> ALLOWED_CONTENT_TYPES =
+            Set.of(
+
+                    "application/pdf",
+
+                    "image/jpeg",
+
+                    "image/png"
+
+            );
+
+
+    // =========================================================
+    // DEPENDENCIES
+    // =========================================================
+
     private final ClaimDocumentRepository claimDocumentRepository;
+
     private final ClaimRepository claimRepository;
-    @Value("${file.upload-dir:uploads/claims}")
-    private String uploadDirectory;
+
+    private final FileStorageService fileStorageService;
+    private final GoogleDriveProperties googleDriveProperties;
+
 
     // =========================================================
     // UPLOAD DOCUMENT
     // =========================================================
+
     @Override
-    public ClaimDocumentDTO uploadDocument(Long claimId, MultipartFile file, ClaimDocumentType documentType, DocumentSource documentSource, String uploadedByEtfNo) {
+    public ClaimDocumentDTO uploadDocument(
+
+            Long claimId,
+
+            MultipartFile file,
+
+            ClaimDocumentType documentType,
+
+            DocumentSource documentSource,
+
+            String uploadedByEtfNo
+    ) {
 
         validateClaimId(claimId);
-        validateUploadRequest(file, documentType, documentSource, uploadedByEtfNo);
 
-        Claim claim = claimRepository.findById(claimId).orElseThrow(() -> new RuntimeException("Claim not found with ID: " + claimId));
+        validateUploadRequest(
 
-        String storedFileName;
-        Path destinationPath;
+                file,
+
+                documentType,
+
+                documentSource,
+
+                uploadedByEtfNo
+
+        );
+
+
+        Claim claim =
+                claimRepository
+                        .findById(claimId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Claim not found with ID: "
+                                                + claimId
+                                )
+                        );
+
+
+        StoredFile storedFile = null;
+
 
         try {
 
-            Path uploadPath = Path.of(uploadDirectory).toAbsolutePath().normalize();
+            // -------------------------------------------------
+            // 1. UPLOAD TO CLOUD STORAGE
+            // -------------------------------------------------
 
-            Files.createDirectories(uploadPath);
+            storedFile =
+                    fileStorageService.upload(
 
-            String originalFileName = file.getOriginalFilename();
+                            file,
 
-            String extension = getFileExtension(originalFileName);
+                            getClaimFolderId(claim)
 
-            storedFileName = UUID.randomUUID() + extension;
+                    );
 
-            destinationPath = uploadPath.resolve(storedFileName).normalize();
 
-            // Prevent path traversal
-            if (!destinationPath.startsWith(uploadPath)) {
+            // -------------------------------------------------
+            // 2. CREATE DATABASE ENTITY
+            // -------------------------------------------------
 
-                throw new IllegalArgumentException("Invalid file path");
+            ClaimDocument document =
+                    ClaimDocument.builder()
+
+                            .claim(claim)
+
+                            .documentType(
+                                    documentType
+                            )
+
+                            .documentSource(
+                                    documentSource
+                            )
+
+                            .status(
+                                    DocumentStatus.UPLOADED
+                            )
+
+                            .fileName(
+                                    sanitizeFileName(
+                                            file.getOriginalFilename()
+                                    )
+                            )
+
+                            .storageProvider(
+                                    storedFile.provider()
+                            )
+
+                            .storageFileId(
+                                    storedFile.fileId()
+                            )
+
+                            .storageFolderId(
+                                    storedFile.folderId()
+                            )
+
+                            .contentType(
+                                    storedFile.contentType()
+                            )
+
+                            .fileSize(
+                                    storedFile.fileSize()
+                            )
+
+                            .uploadedByEtfNo(
+                                    uploadedByEtfNo.trim()
+                            )
+
+                            .build();
+
+
+            // -------------------------------------------------
+            // 3. SAVE DOCUMENT METADATA
+            // -------------------------------------------------
+
+            ClaimDocument savedDocument =
+                    claimDocumentRepository.save(
+                            document
+                    );
+
+
+            return mapToDTO(
+                    savedDocument
+            );
+
+        } catch (Exception e) {
+
+            // -------------------------------------------------
+            // COMPENSATING ACTION
+            //
+            // File uploaded successfully
+            // but database save failed.
+            //
+            // Try to remove orphan cloud file.
+            // -------------------------------------------------
+
+            if (storedFile != null) {
+
+                try {
+
+                    fileStorageService.delete(
+                            storedFile.fileId()
+                    );
+
+                } catch (Exception cleanupException) {
+
+                    //
+                    // Add proper logging / retry mechanism.
+                    //
+                    // Do not hide original exception.
+                }
             }
 
-            Files.copy(file.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
-
-        } catch (IOException e) {
-
-            throw new RuntimeException("Failed to store document", e);
+            throw e;
         }
-
-
-        ClaimDocument document = ClaimDocument.builder()
-
-                .claim(claim)
-
-                .documentType(documentType)
-
-                .documentSource(documentSource)
-
-                .status(DocumentStatus.UPLOADED)
-
-                .fileName(sanitizeFileName(file.getOriginalFilename()))
-
-                .fileUrl(destinationPath.toString())
-
-                .contentType(file.getContentType())
-
-                .fileSize(file.getSize())
-
-                .uploadedByEtfNo(uploadedByEtfNo.trim())
-
-                .build();
-
-
-        ClaimDocument savedDocument = claimDocumentRepository.save(document);
-
-        return mapToDTO(savedDocument);
     }
 
 
     // =========================================================
     // GET DOCUMENTS BY CLAIM ID
     // =========================================================
+
     @Override
     @Transactional(readOnly = true)
-    public List<ClaimDocumentDTO> getDocumentsByClaimId(Long claimId) {
+    public List<ClaimDocumentDTO> getDocumentsByClaimId(
+            Long claimId
+    ) {
 
         validateClaimId(claimId);
 
+
         if (!claimRepository.existsById(claimId)) {
 
-            throw new RuntimeException("Claim not found with ID: " + claimId);
+            throw new RuntimeException(
+                    "Claim not found with ID: "
+                            + claimId
+            );
         }
 
-        return claimDocumentRepository.findByClaimId(claimId).stream().map(this::mapToDTO).toList();
+
+        return claimDocumentRepository
+                .findByClaimId(claimId)
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
     }
 
 
     // =========================================================
     // GET DOCUMENT BY ID
     // =========================================================
+
     @Override
     @Transactional(readOnly = true)
-    public ClaimDocumentDTO getDocumentById(Long documentId) {
+    public ClaimDocumentDTO getDocumentById(
+            Long documentId
+    ) {
 
         validateDocumentId(documentId);
 
-        ClaimDocument document = findDocumentById(documentId);
 
-        return mapToDTO(document);
+        ClaimDocument document =
+                findDocumentById(
+                        documentId
+                );
+
+
+        return mapToDTO(
+                document
+        );
     }
 
 
     // =========================================================
     // VERIFY DOCUMENT
     // =========================================================
+
     @Override
-    public ClaimDocumentDTO verifyDocument(Long documentId) {
+    public ClaimDocumentDTO verifyDocument(
+            Long documentId
+    ) {
 
         validateDocumentId(documentId);
 
-        ClaimDocument document = findDocumentById(documentId);
 
-        if (document.getStatus() == DocumentStatus.REJECTED) {
+        ClaimDocument document =
+                findDocumentById(
+                        documentId
+                );
 
-            throw new IllegalStateException("Rejected document cannot be verified");
+
+        if (document.getStatus()
+                == DocumentStatus.REJECTED) {
+
+            throw new IllegalStateException(
+                    "Rejected document cannot be verified"
+            );
         }
 
-        if (document.getStatus() == DocumentStatus.VERIFIED) {
 
-            throw new IllegalStateException("Document is already verified");
+        if (document.getStatus()
+                == DocumentStatus.VERIFIED) {
+
+            throw new IllegalStateException(
+                    "Document is already verified"
+            );
         }
 
-        document.setStatus(DocumentStatus.VERIFIED);
 
-        document.setRejectionReason(null);
+        document.setStatus(
+                DocumentStatus.VERIFIED
+        );
 
-        ClaimDocument updatedDocument = claimDocumentRepository.save(document);
 
-        return mapToDTO(updatedDocument);
+        document.setRejectionReason(
+                null
+        );
+
+
+        ClaimDocument updatedDocument =
+                claimDocumentRepository.save(
+                        document
+                );
+
+
+        return mapToDTO(
+                updatedDocument
+        );
     }
 
 
     // =========================================================
     // REJECT DOCUMENT
     // =========================================================
+
     @Override
-    public ClaimDocumentDTO rejectDocument(Long documentId, String reason) {
+    public ClaimDocumentDTO rejectDocument(
 
-        validateDocumentId(documentId);
+            Long documentId,
 
-        if (reason == null || reason.isBlank()) {
+            String reason
+    ) {
 
-            throw new IllegalArgumentException("Rejection reason is required");
+        validateDocumentId(
+                documentId
+        );
+
+
+        if (reason == null
+                || reason.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Rejection reason is required"
+            );
         }
 
-        ClaimDocument document = findDocumentById(documentId);
 
-        if (document.getStatus() == DocumentStatus.VERIFIED) {
+        ClaimDocument document =
+                findDocumentById(
+                        documentId
+                );
 
-            throw new IllegalStateException("Verified document cannot be rejected");
+
+        if (document.getStatus()
+                == DocumentStatus.VERIFIED) {
+
+            throw new IllegalStateException(
+                    "Verified document cannot be rejected"
+            );
         }
 
-        document.setStatus(DocumentStatus.REJECTED);
 
-        document.setRejectionReason(reason.trim());
+        document.setStatus(
+                DocumentStatus.REJECTED
+        );
 
-        ClaimDocument updatedDocument = claimDocumentRepository.save(document);
 
-        return mapToDTO(updatedDocument);
+        document.setRejectionReason(
+                reason.trim()
+        );
+
+
+        ClaimDocument updatedDocument =
+                claimDocumentRepository.save(
+                        document
+                );
+
+
+        return mapToDTO(
+                updatedDocument
+        );
     }
 
 
     // =========================================================
     // DELETE DOCUMENT
     // =========================================================
+
     @Override
-    public void deleteDocument(Long documentId) {
+    public void deleteDocument(
+            Long documentId
+    ) {
 
-        validateDocumentId(documentId);
+        validateDocumentId(
+                documentId
+        );
 
-        ClaimDocument document = findDocumentById(documentId);
 
-        deletePhysicalFile(document.getFileUrl());
+        ClaimDocument document =
+                findDocumentById(
+                        documentId
+                );
 
-        claimDocumentRepository.delete(document);
+
+        // -------------------------------------------------
+        // DELETE FILE FROM CLOUD STORAGE
+        // -------------------------------------------------
+
+        fileStorageService.delete(
+                document.getStorageFileId()
+        );
+
+
+        // -------------------------------------------------
+        // DELETE DATABASE RECORD
+        // -------------------------------------------------
+
+        claimDocumentRepository.delete(
+                document
+        );
+    }
+
+
+    // =========================================================
+    // GET DOCUMENT FILE
+    // =========================================================
+
+    @Override
+    @Transactional(readOnly = true)
+    public StorageFile getDocumentFile(
+            Long documentId
+    ) {
+
+        validateDocumentId(
+                documentId
+        );
+
+
+        ClaimDocument document =
+                findDocumentById(
+                        documentId
+                );
+
+
+        return fileStorageService.download(
+                document.getStorageFileId()
+        );
+    }
+
+
+    // =========================================================
+    // GET CLAIM FOLDER
+    // =========================================================
+
+    private String getClaimFolderId(
+            Claim claim
+    ) {
+
+        return googleDriveProperties
+                .getRootFolderId();
     }
 
 
     // =========================================================
     // VALIDATE FILE UPLOAD
     // =========================================================
-    private void validateUploadRequest(MultipartFile file, ClaimDocumentType documentType, DocumentSource documentSource, String uploadedByEtfNo) {
+
+    private void validateUploadRequest(
+
+            MultipartFile file,
+
+            ClaimDocumentType documentType,
+
+            DocumentSource documentSource,
+
+            String uploadedByEtfNo
+    ) {
 
         if (file == null || file.isEmpty()) {
 
-            throw new IllegalArgumentException("File is required");
+            throw new IllegalArgumentException(
+                    "File is required"
+            );
         }
+
 
         if (documentType == null) {
 
-            throw new IllegalArgumentException("Document type is required");
+            throw new IllegalArgumentException(
+                    "Document type is required"
+            );
         }
+
 
         if (documentSource == null) {
 
-            throw new IllegalArgumentException("Document source is required");
+            throw new IllegalArgumentException(
+                    "Document source is required"
+            );
         }
 
-        if (uploadedByEtfNo == null || uploadedByEtfNo.isBlank()) {
 
-            throw new IllegalArgumentException("Uploader ETF number is required");
+        if (uploadedByEtfNo == null
+                || uploadedByEtfNo.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Uploader ETF number is required"
+            );
         }
+
 
         if (file.getSize() > MAX_FILE_SIZE) {
 
-            throw new IllegalArgumentException("File size must not exceed 10 MB");
+            throw new IllegalArgumentException(
+                    "File size must not exceed 10 MB"
+            );
         }
 
-        String contentType = file.getContentType();
 
-        if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
+        String contentType =
+                file.getContentType();
 
-            throw new IllegalArgumentException("Only PDF, JPG and PNG files are allowed");
+
+        if (contentType == null
+                || !ALLOWED_CONTENT_TYPES
+                .contains(contentType)) {
+
+            throw new IllegalArgumentException(
+                    "Only PDF, JPG and PNG files are allowed"
+            );
         }
     }
 
@@ -257,20 +557,36 @@ public class ClaimDocumentServiceImpl implements ClaimDocumentService {
     // =========================================================
     // FIND DOCUMENT
     // =========================================================
-    private ClaimDocument findDocumentById(Long documentId) {
 
-        return claimDocumentRepository.findById(documentId).orElseThrow(() -> new RuntimeException("Document not found with ID: " + documentId));
+    private ClaimDocument findDocumentById(
+            Long documentId
+    ) {
+
+        return claimDocumentRepository
+                .findById(documentId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Document not found with ID: "
+                                        + documentId
+                        )
+                );
     }
 
 
     // =========================================================
     // VALIDATE CLAIM ID
     // =========================================================
-    private void validateClaimId(Long claimId) {
 
-        if (claimId == null || claimId <= 0) {
+    private void validateClaimId(
+            Long claimId
+    ) {
 
-            throw new IllegalArgumentException("Claim ID must be a valid positive number");
+        if (claimId == null
+                || claimId <= 0) {
+
+            throw new IllegalArgumentException(
+                    "Claim ID must be a valid positive number"
+            );
         }
     }
 
@@ -278,96 +594,107 @@ public class ClaimDocumentServiceImpl implements ClaimDocumentService {
     // =========================================================
     // VALIDATE DOCUMENT ID
     // =========================================================
-    private void validateDocumentId(Long documentId) {
 
-        if (documentId == null || documentId <= 0) {
+    private void validateDocumentId(
+            Long documentId
+    ) {
 
-            throw new IllegalArgumentException("Document ID must be a valid positive number");
+        if (documentId == null
+                || documentId <= 0) {
+
+            throw new IllegalArgumentException(
+                    "Document ID must be a valid positive number"
+            );
         }
-    }
-
-
-    // =========================================================
-    // GET FILE EXTENSION
-    // =========================================================
-    private String getFileExtension(String fileName) {
-
-        if (fileName == null || !fileName.contains(".")) {
-
-            return "";
-        }
-
-        return fileName.substring(fileName.lastIndexOf("."));
     }
 
 
     // =========================================================
     // SANITIZE FILE NAME
     // =========================================================
-    private String sanitizeFileName(String fileName) {
 
-        if (fileName == null) {
+    private String sanitizeFileName(
+            String fileName
+    ) {
+
+        if (fileName == null
+                || fileName.isBlank()) {
+
             return "unknown";
         }
 
-        return Path.of(fileName).getFileName().toString();
-    }
 
-
-    // =========================================================
-    // DELETE PHYSICAL FILE
-    // =========================================================
-    private void deletePhysicalFile(String filePath) {
-
-        if (filePath == null || filePath.isBlank()) {
-            return;
-        }
-
-        try {
-
-            Path path = Path.of(filePath);
-
-            Files.deleteIfExists(path);
-
-        } catch (IOException e) {
-
-            throw new RuntimeException("Failed to delete physical document", e);
-        }
+        return Path.of(fileName)
+                .getFileName()
+                .toString();
     }
 
 
     // =========================================================
     // ENTITY -> DTO
     // =========================================================
-    private ClaimDocumentDTO mapToDTO(ClaimDocument document) {
+
+    private ClaimDocumentDTO mapToDTO(
+            ClaimDocument document
+    ) {
 
         return ClaimDocumentDTO.builder()
 
-                .id(document.getId())
+                .id(
+                        document.getId()
+                )
 
-                .claimId(document.getClaim().getId())
+                .claimId(
+                        document.getClaim().getId()
+                )
 
-                .documentType(document.getDocumentType())
+                .documentType(
+                        document.getDocumentType()
+                )
 
-                .documentSource(document.getDocumentSource())
+                .documentSource(
+                        document.getDocumentSource()
+                )
 
-                .status(document.getStatus())
+                .status(
+                        document.getStatus()
+                )
 
-                .fileName(document.getFileName())
+                .fileName(
+                        document.getFileName()
+                )
 
-                .fileUrl(document.getFileUrl())
+                // Secure backend endpoint.
+                // Do NOT expose Google Drive file ID.
+                .viewUrl(
+                        "/api/claims/documents/"
+                                + document.getId()
+                                + "/view"
+                )
 
-                .contentType(document.getContentType())
+                .contentType(
+                        document.getContentType()
+                )
 
-                .fileSize(document.getFileSize())
+                .fileSize(
+                        document.getFileSize()
+                )
 
-                .uploadedByEtfNo(document.getUploadedByEtfNo())
+                .uploadedByEtfNo(
+                        document.getUploadedByEtfNo()
+                )
 
-                .rejectionReason(document.getRejectionReason())
+                .rejectionReason(
+                        document.getRejectionReason()
+                )
 
-                .uploadedAt(document.getUploadedAt())
+                .uploadedAt(
+                        document.getUploadedAt()
+                )
 
-                .updatedAt(document.getUpdatedAt())
+                .updatedAt(
+                        document.getUpdatedAt()
+                )
 
                 .build();
     }

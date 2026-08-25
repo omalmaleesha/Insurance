@@ -1,9 +1,12 @@
 package com.example.Insurance.service;
 
-
 import com.example.Insurance.dto.ClaimDocumentDTO;
+
+import com.example.Insurance.service.storage.StorageFile;
+
 import com.example.Insurance.utils.types.ClaimDocumentType;
 import com.example.Insurance.utils.types.DocumentSource;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -18,16 +21,28 @@ public interface ClaimDocumentService {
             String uploadedByEtfNo
     );
 
-    List<ClaimDocumentDTO> getDocumentsByClaimId(Long claimId);
+    List<ClaimDocumentDTO> getDocumentsByClaimId(
+            Long claimId
+    );
 
-    ClaimDocumentDTO getDocumentById(Long documentId);
+    ClaimDocumentDTO getDocumentById(
+            Long documentId
+    );
 
-    ClaimDocumentDTO verifyDocument(Long documentId);
+    ClaimDocumentDTO verifyDocument(
+            Long documentId
+    );
 
     ClaimDocumentDTO rejectDocument(
             Long documentId,
             String reason
     );
 
-    void deleteDocument(Long documentId);
+    void deleteDocument(
+            Long documentId
+    );
+
+    StorageFile getDocumentFile(
+            Long documentId
+    );
 }

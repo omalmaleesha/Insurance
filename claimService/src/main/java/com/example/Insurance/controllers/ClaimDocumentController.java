@@ -2,11 +2,14 @@ package com.example.Insurance.controllers;
 
 import com.example.Insurance.dto.ClaimDocumentDTO;
 import com.example.Insurance.service.ClaimDocumentService;
+import com.example.Insurance.service.storage.StorageFile;
 import com.example.Insurance.utils.types.ClaimDocumentType;
 import com.example.Insurance.utils.types.DocumentSource;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -153,5 +156,60 @@ public class ClaimDocumentController {
                 .deleteDocument(documentId);
 
         return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping("/documents/{documentId}/view")
+    public ResponseEntity<InputStreamResource> viewDocument(
+
+            @PathVariable Long documentId
+    ) {
+
+        StorageFile storageFile =
+                claimDocumentService
+                        .getDocumentFile(
+                                documentId
+                        );
+
+
+        MediaType mediaType;
+
+        try {
+
+            mediaType =
+                    MediaType.parseMediaType(
+                            storageFile.contentType()
+                    );
+
+        } catch (Exception e) {
+
+            mediaType =
+                    MediaType.APPLICATION_OCTET_STREAM;
+        }
+
+
+        return ResponseEntity.ok()
+
+                .contentType(
+                        mediaType
+                )
+
+                .header(
+
+                        HttpHeaders.CONTENT_DISPOSITION,
+
+                        "inline; filename=\""
+                                + storageFile.fileName()
+                                + "\""
+
+                )
+
+                .body(
+
+                        new InputStreamResource(
+                                storageFile.inputStream()
+                        )
+
+                );
     }
 }
