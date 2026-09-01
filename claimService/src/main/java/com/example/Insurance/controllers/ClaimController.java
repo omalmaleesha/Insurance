@@ -16,6 +16,7 @@ import java.util.List;
 @RequestMapping("/api/claims")
 @RequiredArgsConstructor
 public class ClaimController {
+    //need notifies - agent,branch,customer must when create a new claim
 
     private final ClaimService claimService;
 

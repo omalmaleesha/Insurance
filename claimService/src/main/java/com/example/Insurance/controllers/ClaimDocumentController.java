@@ -24,30 +24,20 @@ import java.util.List;
 public class ClaimDocumentController {
 
     private final ClaimDocumentService claimDocumentService;
-
-
-    // =========================================================
-    // UPLOAD DOCUMENT
-    //
+    //for now we implements only pdf upload
     // POST /api/claims/{claimId}/documents
-    // =========================================================
     @PostMapping(
             value = "/{claimId}/documents",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     public ResponseEntity<ClaimDocumentDTO> uploadDocument(
-
             @PathVariable Long claimId,
-
             @RequestParam("file")
             MultipartFile file,
-
             @RequestParam("documentType")
             ClaimDocumentType documentType,
-
             @RequestParam("documentSource")
             DocumentSource documentSource,
-
             @RequestParam("uploadedByEtfNo")
             String uploadedByEtfNo
     ) {
@@ -66,12 +56,7 @@ public class ClaimDocumentController {
                 .body(document);
     }
 
-
-    // =========================================================
-    // GET ALL DOCUMENTS FOR A CLAIM
-    //
     // GET /api/claims/{claimId}/documents
-    // =========================================================
     @GetMapping("/{claimId}/documents")
     public ResponseEntity<List<ClaimDocumentDTO>> getDocumentsByClaimId(
             @PathVariable Long claimId
@@ -83,12 +68,7 @@ public class ClaimDocumentController {
         );
     }
 
-
-    // =========================================================
-    // GET DOCUMENT METADATA BY DOCUMENT ID
-    //
     // GET /api/claims/documents/{documentId}
-    // =========================================================
     @GetMapping("/documents/{documentId}")
     public ResponseEntity<ClaimDocumentDTO> getDocumentById(
             @PathVariable Long documentId
@@ -100,12 +80,7 @@ public class ClaimDocumentController {
         );
     }
 
-
-    // =========================================================
-    // VERIFY DOCUMENT
-    //
     // PATCH /api/claims/documents/{documentId}/verify
-    // =========================================================
     @PatchMapping("/documents/{documentId}/verify")
     public ResponseEntity<ClaimDocumentDTO> verifyDocument(
             @PathVariable Long documentId
@@ -116,13 +91,7 @@ public class ClaimDocumentController {
                         .verifyDocument(documentId)
         );
     }
-
-
-    // =========================================================
-    // REJECT DOCUMENT
-    //
     // PATCH /api/claims/documents/{documentId}/reject
-    // =========================================================
     @PatchMapping("/documents/{documentId}/reject")
     public ResponseEntity<ClaimDocumentDTO> rejectDocument(
 
@@ -141,12 +110,7 @@ public class ClaimDocumentController {
         );
     }
 
-
-    // =========================================================
-    // DELETE DOCUMENT
-    //
     // DELETE /api/claims/documents/{documentId}
-    // =========================================================
     @DeleteMapping("/documents/{documentId}")
     public ResponseEntity<Void> deleteDocument(
             @PathVariable Long documentId
