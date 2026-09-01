@@ -128,6 +128,21 @@ public class ClaimDocument {
         updatedAt = LocalDateTime.now();
     }
 
+    @Column(
+            name = "file_hash",
+            length = 64
+    )
+    private String fileHash;
+
+    @Column(name = "verified_at")
+    private LocalDateTime verifiedAt;
+
+    @Column(
+            name = "verified_by_etf_no",
+            length = 20
+    )
+    private String verifiedByEtfNo;
+
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();

@@ -37,6 +37,13 @@ public class Claim {
     @Column(name = "claim_type", nullable = false)
     private ClaimType claimType;
 
+    @Column(
+            name = "policy_number",
+            nullable = false,
+            length = 40
+    )
+    private String policyNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ClaimStatus status;
