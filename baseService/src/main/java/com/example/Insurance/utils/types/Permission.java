@@ -21,6 +21,15 @@ public enum Permission {
     PROPOSAL_SEND,
     PROPOSAL_APPROVE,
 
+    // Policy
+    POLICY_CREATE,
+    POLICY_READ,
+    POLICY_UPDATE,
+    POLICY_DELETE,
+    POLICY_ISSUE,
+    POLICY_CANCEL,
+    POLICY_RENEW,
+
     // Email
     EMAIL_SEND,
 

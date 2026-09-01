@@ -2,7 +2,6 @@ package com.example.Insurance.utils.types;
 
 
 public enum ClaimDocumentType {
-
     CLAIM_FORM,
     CUSTOMER_STATEMENT,
     CUSTOMER_LETTER,
@@ -13,5 +12,6 @@ public enum ClaimDocumentType {
     VEHICLE_REGISTRATION,
     DRIVING_LICENSE,
     PHOTOS,
-    OTHER
+    OTHER,
+    G_REPORT
 }

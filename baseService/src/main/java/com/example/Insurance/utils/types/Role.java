@@ -19,6 +19,13 @@ public enum Role {
             Permission.PROPOSAL_UPDATE,
             Permission.PROPOSAL_SEND,
 
+            Permission.POLICY_CREATE,
+            Permission.POLICY_READ,
+            Permission.POLICY_UPDATE,
+            Permission.POLICY_ISSUE,
+            Permission.POLICY_CANCEL,
+            Permission.POLICY_RENEW,
+
             Permission.EMAIL_SEND,
 
             Permission.FILE_TRANSFER_CREATE,
@@ -34,7 +41,10 @@ public enum Role {
 
             Permission.PROPOSAL_CREATE,
             Permission.PROPOSAL_READ,
-            Permission.PROPOSAL_SEND
+            Permission.PROPOSAL_SEND,
+
+            Permission.POLICY_CREATE,
+            Permission.POLICY_READ
     ));
 
     private final Set<Permission> permissions;

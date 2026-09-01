@@ -1,9 +1,9 @@
 package com.example.Insurance.utils.types;
 
 public enum DocumentStatus {
-
-    PENDING,
     UPLOADED,
+    PROCESSING,
     VERIFIED,
-    REJECTED
+    REJECTED,
+    INVALID
 }
