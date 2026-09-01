@@ -1,0 +1,18 @@
+package com.example.Insurance.service.gReport.impl;
+
+public record GReportDocumentValidationResult(boolean valid, String reason) {
+
+    public static GReportDocumentValidationResult valid() {
+        return new GReportDocumentValidationResult(
+                true,
+                null
+        );
+    }
+
+    public static GReportDocumentValidationResult invalid(String reason) {
+        return new GReportDocumentValidationResult(
+                false,
+                reason
+        );
+    }
+}
