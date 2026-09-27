@@ -6,5 +6,6 @@ public enum PolicyType {
 
     BUSINESS_PREMISES,
 
-    INDUSTRIAL_PREMISES
+    INDUSTRIAL_PREMISES,
+
 }

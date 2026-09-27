@@ -30,6 +30,16 @@ public class GoogleDriveStorageService
             String folderId
     ) {
 
+        if (multipartFile == null || multipartFile.isEmpty()) {
+            throw new IllegalArgumentException("File is required");
+        }
+
+        if (folderId == null || folderId.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Google Drive folder ID is required"
+            );
+        }
+
         try {
 
             String originalFileName =
@@ -42,12 +52,8 @@ public class GoogleDriveStorageService
                             + getExtension(originalFileName);
 
             File metadata = new File();
-
             metadata.setName(storedFileName);
-
-            metadata.setParents(
-                    List.of(folderId)
-            );
+            metadata.setParents(List.of(folderId));
 
             InputStreamContent mediaContent =
                     new InputStreamContent(
@@ -67,17 +73,11 @@ public class GoogleDriveStorageService
                             .execute();
 
             return new StoredFile(
-
                     StorageProvider.GOOGLE_DRIVE,
-
                     uploadedFile.getId(),
-
                     folderId,
-
                     uploadedFile.getName(),
-
                     uploadedFile.getMimeType(),
-
                     uploadedFile.getSize()
             );
 

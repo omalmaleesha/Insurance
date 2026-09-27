@@ -18,7 +18,7 @@ import java.util.Optional;
 @Repository
 public interface GReportGenerationJobRepository extends JpaRepository<GReportGenerationJob, Long> {
 
-    Optional<GReportGenerationJob> findByClaimId(Long claimId);
+    GReportGenerationJob findByClaimId(Long claimId);
 
     boolean existsByClaimId(Long claimId);
 

@@ -1,6 +1,8 @@
 package com.example.ClaimInsurance.controllers;
 
 import com.example.ClaimInsurance.dto.ClaimDocumentDTO;
+import com.example.ClaimInsurance.dto.GReportResponseDTO;
+import com.example.ClaimInsurance.entities.GReportGenerationJob;
 import com.example.ClaimInsurance.service.ClaimDocumentService;
 import com.example.ClaimInsurance.service.storage.StorageFile;
 import com.example.ClaimInsurance.utils.types.ClaimDocumentType;
@@ -175,5 +177,30 @@ public class ClaimDocumentController {
                         )
 
                 );
+    }
+
+
+    @GetMapping("/{claimId}/g-report")
+    public ResponseEntity<GReportResponseDTO> getGReport(
+            @PathVariable Long claimId
+    ) {
+        GReportGenerationJob gReport =
+                claimDocumentService.getGReportFile(String.valueOf(claimId));
+
+        GReportResponseDTO response = GReportResponseDTO.builder()
+                .id(gReport.getId())
+                .claimId(gReport.getClaim().getId())
+                .status(gReport.getStatus())
+                .attemptCount(gReport.getAttemptCount())
+                .errorMessage(gReport.getErrorMessage())
+                .createdAt(gReport.getCreatedAt())
+                .startedAt(gReport.getStartedAt())
+                .completedAt(gReport.getCompletedAt())
+                .workerId(gReport.getWorkerId())
+                .lockedAt(gReport.getLockedAt())
+                .lastError(gReport.getLastError())
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 }

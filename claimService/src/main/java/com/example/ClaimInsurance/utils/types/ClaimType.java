@@ -6,5 +6,8 @@ public enum ClaimType {
     PROPERTY,
     FIRE,
     TRAVEL,
-    OTHER
+    OTHER,
+    BUSINESS_PREMISES,
+    INDUSTRIAL_PREMISES,
+    PRIVATE_HOUSE,
 }

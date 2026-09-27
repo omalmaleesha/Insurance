@@ -35,6 +35,7 @@ public class ClaimServiceImpl implements ClaimService {
         Claim claim = Claim.builder()
                 .claimNumber(generateClaimNumber())
                 .customerId(claimDTO.getCustomerId())
+                .policyNumber(claimDTO.getPolicyNumber())
                 .createdByEtfNo(claimDTO.getCreatedByEtfNo())
                 .claimType(claimDTO.getClaimType())
                 .status(ClaimStatus.REPORTED)
@@ -275,6 +276,12 @@ public class ClaimServiceImpl implements ClaimService {
             );
         }
 
+        if (isBlank(claimDTO.getPolicyNumber())) {
+            throw new IllegalArgumentException(
+                    "Policy number is required"
+            );
+        }
+
         if (claimDTO.getCreatedByEtfNo() == null ||
                 claimDTO.getCreatedByEtfNo().isBlank()) {
 
@@ -431,6 +438,7 @@ public class ClaimServiceImpl implements ClaimService {
                 .id(claim.getId())
                 .claimNumber(claim.getClaimNumber())
                 .customerId(claim.getCustomerId())
+                .policyNumber(claim.getPolicyNumber())
                 .createdByEtfNo(claim.getCreatedByEtfNo())
                 .claimType(claim.getClaimType())
                 .status(claim.getStatus())

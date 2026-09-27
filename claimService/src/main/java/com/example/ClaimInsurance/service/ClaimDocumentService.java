@@ -2,6 +2,7 @@ package com.example.ClaimInsurance.service;
 
 import com.example.ClaimInsurance.dto.ClaimDocumentDTO;
 
+import com.example.ClaimInsurance.entities.GReportGenerationJob;
 import com.example.ClaimInsurance.service.storage.StorageFile;
 
 import com.example.ClaimInsurance.utils.types.ClaimDocumentType;
@@ -10,8 +11,11 @@ import com.example.ClaimInsurance.utils.types.DocumentSource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ClaimDocumentService {
+
+    GReportGenerationJob getGReportFile(String claimId);
 
     ClaimDocumentDTO uploadDocument(
             Long claimId,

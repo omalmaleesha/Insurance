@@ -3,8 +3,10 @@ import com.example.ClaimInsurance.config.GoogleDriveProperties;
 import com.example.ClaimInsurance.dto.ClaimDocumentDTO;
 import com.example.ClaimInsurance.entities.Claim;
 import com.example.ClaimInsurance.entities.ClaimDocument;
+import com.example.ClaimInsurance.entities.GReportGenerationJob;
 import com.example.ClaimInsurance.repository.ClaimDocumentRepository;
 import com.example.ClaimInsurance.repository.ClaimRepository;
+import com.example.ClaimInsurance.repository.GReportGenerationJobRepository;
 import com.example.ClaimInsurance.service.ClaimDocumentService;
 import com.example.ClaimInsurance.service.gReport.GReportJobService;
 import com.example.ClaimInsurance.service.storage.FileStorageService;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -27,6 +30,7 @@ import java.util.Set;
 public class ClaimDocumentServiceImpl implements ClaimDocumentService {
 
     private final GReportJobService gReportJobService;
+    private final GReportGenerationJobRepository gReportGenerationJobRepository;;
     private static final long MAX_FILE_SIZE =
             10 * 1024 * 1024;
 
@@ -41,6 +45,12 @@ public class ClaimDocumentServiceImpl implements ClaimDocumentService {
     private final ClaimRepository claimRepository;
     private final FileStorageService fileStorageService;
     private final GoogleDriveProperties googleDriveProperties;
+
+    @Override
+    public GReportGenerationJob getGReportFile(String claimId) {
+        GReportGenerationJob byClaimId = gReportGenerationJobRepository.findByClaimId(Long.parseLong(claimId));
+        return byClaimId;
+    }
 
     @Override
     public ClaimDocumentDTO uploadDocument(
@@ -281,11 +291,18 @@ public class ClaimDocumentServiceImpl implements ClaimDocumentService {
                 document.getStorageFileId()
         );
     }
-    private String getClaimFolderId(
-            Claim claim
-    ) {
-        return googleDriveProperties
-                .getRootFolderId();
+    private String getClaimFolderId(Claim claim) {
+
+        String folderId =
+                googleDriveProperties.getRootFolderId();
+
+        if (folderId == null || folderId.isBlank()) {
+            throw new IllegalStateException(
+                    "Google Drive root folder ID is not configured"
+            );
+        }
+
+        return folderId;
     }
 
     private void validateUploadRequest(
@@ -435,4 +452,6 @@ public class ClaimDocumentServiceImpl implements ClaimDocumentService {
                 )
                 .build();
     }
+
+
 }
